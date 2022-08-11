@@ -5,7 +5,6 @@ from streamlit_lottie import st_lottie
 from PIL import Image
 
 
-# Find more emojis here: https://www.webfx.com/tools/emoji-cheat-sheet/
 st.set_page_config(page_title="TimeSeriesForecasting", page_icon=":tada:", layout="wide")
 
 
@@ -67,7 +66,7 @@ with st.container():
 # ---- MODEL PREDICTION ----
 with st.container():
     st.write("---")
-    st.header("Predict price:")
+    st.header("Predict price")
 
 
 # ---- CONTACT ----
@@ -76,7 +75,6 @@ with st.container():
     st.header("Give us your feedback!")
     st.write("##")
 
-    # Documention: https://formsubmit.co/ !!! CHANGE EMAIL ADDRESS !!!
     contact_form = """
     <form action="https://formsubmit.co/phanphuocminh2002@gmail.com" method="POST">
         <input type="hidden" name="_captcha" value="false">
