@@ -1,0 +1,6 @@
+Needed library:
+	requests
+	streamlit
+	pandas	
+	streamlit_lottie
+	Pillow
