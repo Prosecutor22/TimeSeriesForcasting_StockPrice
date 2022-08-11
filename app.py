@@ -33,8 +33,8 @@ with st.container():
     st.write(
         "This product is used for Stock Prediction."
     )
-    st.write("[See our report >](https://www.overleaf.com/read/zmjvcpqqtwfm)")
-    # st.write("[See our slide >](url here)")
+    st.write("[See our poster >](url here)")
+    
 
 # ---- ABOUT PROJECT ----
 with st.container():
@@ -45,7 +45,8 @@ with st.container():
         st.write("##")
         st.write("Will be add soon"
         )
-        
+        st.write("[See our report >](https://www.overleaf.com/read/zmjvcpqqtwfm)")
+        st.write("[See our slide >](url here)")
     # with right_column:
     #     st_lottie(example, height=300, key="example")
 
