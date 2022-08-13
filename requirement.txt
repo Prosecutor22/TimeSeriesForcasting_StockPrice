@@ -1,6 +1,3 @@
-Needed library:
-	requests
-	streamlit
-	pandas	
-	streamlit_lottie
-	Pillow
+Requirement:
+	python (recommend version 3.12) + needed library
+	conda: miniconda/anaconda

@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_lottie import st_lottie
 from PIL import Image
-import pandas as pd
+# import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -13,6 +13,8 @@ from sklearn.preprocessing import MinMaxScaler
 from keras import Sequential
 from keras.layers import Dense, LSTM
 from matplotlib.animation import FuncAnimation
+import math 
+from sklearn.metrics import mean_squared_error
 
 sns.set_style("whitegrid")
 plt.style.use("fivethirtyeight")
@@ -45,7 +47,7 @@ with st.container():
     st.write(
         "This product is used for Stock Prediction."
     )
-    st.write("[See our poster >](url here)")
+    st.write("[See our poster >](https://drive.google.com/file/d/1rS9oSHcqHdxmL7maoLwdHriDLVE8TcyE/view?usp=sharing)")
     
 
 # ---- ABOUT PROJECT ----
@@ -55,10 +57,10 @@ with st.container():
     with left_column:
         st.header("About our project")
         st.write("##")
-        st.write("Will be add soon"
-        )
-        st.write("[See our report >](https://www.overleaf.com/read/zmjvcpqqtwfm)")
-        st.write("[See our slide >](url here)")
+        # st.write("Will be add soon"
+        # )
+        st.write("[See our report >](https://drive.google.com/file/d/16_IbuXiqWthJYM--fNYwMRiOlqi7aI9m/view?usp=sharing)")
+        st.write("[See our slide >](https://drive.google.com/file/d/1Fr4hF8aIY1f9V0pbFHw1MD2Ahw-Jt95R/view?usp=sharing)")
     # with right_column:
     #     st_lottie(example, height=300, key="example")
 
@@ -83,7 +85,7 @@ with st.container():
         if st.button("Click here to view data"):
             st.write(df) 
         if st.button("Click here to visualize your data"):
-            fig = plt.figure(figsize=(16,6))
+            fig = plt.figure(figsize=(12,6))
             plt.title('Price History')
             plt.plot(df['Price'])
             plt.xlabel('Date', fontsize=18)
@@ -106,18 +108,20 @@ with st.container():
             train_data = scaled_data[0:int(training_data_len), :]
             x_train = []
             y_train = []
+
             for i in range(60, len(train_data)):
                 x_train.append(train_data[i-60:i, 0])
                 y_train.append(train_data[i, 0])
+
             x_train, y_train = np.array(x_train), np.array(y_train)
             x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
             # ---- BUILD MODEL ---- 
             from keras.layers import SimpleRNN
             model = Sequential()
-            model.add(SimpleRNN(128, return_sequences=True, input_shape= (x_train.shape[1], 1)))
-            model.add(SimpleRNN(64, return_sequences=False))
-            model.add(Dense(25))
+            model.add(LSTM(512, return_sequences=True, input_shape= (x_train.shape[1], 1)))
+            model.add(LSTM(256, input_shape= (x_train.shape[1], 1)))
+            model.add(Dense(16))
             model.add(Dense(1))
             model.compile(optimizer='adam', loss='mean_squared_error')
 
@@ -126,6 +130,11 @@ with st.container():
             test_data = scaled_data[training_data_len - 60: , :]
             
             # ---- EVALUATE ---- 
+            # ---- LSTM Model
+            st.write("---")
+            st.subheader("Prediction by LSTM Model:")
+            test_data = scaled_data[training_data_len - 60: , :]
+
             x_test = []
             y_test = dataset[training_data_len:, :]
             for i in range(60, len(test_data)):
@@ -137,22 +146,49 @@ with st.container():
 
             predictions = model.predict(x_test)
             predictions = scaler.inverse_transform(predictions)
-
-            rmse = np.sqrt(np.mean(((predictions - y_test) ** 2)))
-
+            rmse = math.sqrt(mean_squared_error(y_test, predictions))
+            st.write('Test RMSE: %.3f' % rmse)
             train = df[:training_data_len]
             valid = df[training_data_len:]
             valid['Predictions'] = predictions
-
-            predict_fig = plt.figure(figsize=(16,6))
-            plt.title('Model')
+            lstm_fig = plt.figure(figsize=(12,6))
+            plt.title('LSTM Model')
             plt.xlabel('Date', fontsize=18)
             plt.ylabel('Price x1000 VND', fontsize=18)
             plt.plot(train['Price'])
             plt.plot(valid[['Price', 'Predictions']])
             plt.legend(['Train', 'Val', 'Predictions'], loc='lower right')
-            st.pyplot(predict_fig)
+            st.pyplot(lstm_fig)
 
+            # ---- ARIMA Model
+            from statsmodels.tsa.arima.model import ARIMA
+            X = df.values
+            train, test = X[:training_data_len], X[training_data_len:]
+            history = [x for x in train]
+            predictions = list()
+
+            for t in range(len(test)):
+                model = ARIMA(history, order=(5,1,0))
+                model_fit = model.fit()
+                output = model_fit.forecast()
+                yhat = output[0]
+                predictions.append(yhat)
+                obs = test[t]
+                history.append(obs)
+            st.write("---")
+            st.subheader("Prediction by ARIMA Model:")
+            rmse = math.sqrt(mean_squared_error(test, predictions))
+            st.write('Test RMSE: %.3f' % rmse)
+            df_valid = df[training_data_len:]
+            df_valid['Predictions'] = predictions
+            arima_fig = plt.figure(figsize=(12,6))
+            plt.title('ARIMA Model')
+            plt.xlabel('Date', fontsize=18)
+            plt.ylabel('Price x1000 VND', fontsize=18)
+            plt.plot(df['Price'])
+            plt.plot(df_valid[['Price', 'Predictions']])
+            plt.legend(['Val', 'Predictions'], loc='lower right')
+            st.pyplot(arima_fig)
 
 # ---- CONTACT ----
 with st.container():
