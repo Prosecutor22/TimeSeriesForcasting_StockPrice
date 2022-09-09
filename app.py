@@ -15,6 +15,7 @@ from keras.layers import Dense, LSTM
 from matplotlib.animation import FuncAnimation
 import math 
 from sklearn.metrics import mean_squared_error
+from tensorflow.keras.optimizers import Adam
 
 sns.set_style("whitegrid")
 plt.style.use("fivethirtyeight")
@@ -109,8 +110,8 @@ with st.container():
             x_train = []
             y_train = []
 
-            for i in range(60, len(train_data)):
-                x_train.append(train_data[i-60:i, 0])
+            for i in range(30, len(train_data)):
+                x_train.append(train_data[i-30:i, 0])
                 y_train.append(train_data[i, 0])
 
             x_train, y_train = np.array(x_train), np.array(y_train)
@@ -119,26 +120,26 @@ with st.container():
             # ---- BUILD MODEL ---- 
             from keras.layers import SimpleRNN
             model = Sequential()
-            model.add(LSTM(512, return_sequences=True, input_shape= (x_train.shape[1], 1)))
-            model.add(LSTM(256, input_shape= (x_train.shape[1], 1)))
+            model.add(LSTM(256, return_sequences=True, input_shape= (x_train.shape[1], 1)))
+            model.add(LSTM(128, input_shape= (x_train.shape[1], 1)))
             model.add(Dense(16))
             model.add(Dense(1))
-            model.compile(optimizer='adam', loss='mean_squared_error')
+            model.compile(optimizer=Adam(learning_rate=0.0001), loss='mean_squared_error')
 
             # ---- TRAIN MODEL ---- 
-            model.fit(x_train, y_train, batch_size=1, epochs=1)
-            test_data = scaled_data[training_data_len - 60: , :]
+            model.fit(x_train, y_train, batch_size=1, epochs=1, shuffle=False)
+            test_data = scaled_data[training_data_len - 30: , :]
             
             # ---- EVALUATE ---- 
             # ---- LSTM Model
             st.write("---")
             st.subheader("Prediction by LSTM Model:")
-            test_data = scaled_data[training_data_len - 60: , :]
+            test_data = scaled_data[training_data_len - 30: , :]
 
             x_test = []
             y_test = dataset[training_data_len:, :]
-            for i in range(60, len(test_data)):
-                x_test.append(test_data[i-60:i, 0])
+            for i in range(30, len(test_data)):
+                x_test.append(test_data[i-30:i, 0])
                 
             x_test = np.array(x_test)
 
