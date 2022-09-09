@@ -54,16 +54,19 @@ with st.container():
 # ---- ABOUT PROJECT ----
 with st.container():
     st.write("---")
+    st.header("About our project")
     left_column, right_column = st.columns(2)
     with left_column:
-        st.header("About our project")
+        st.write("In the current era of rapid digital transformation, the rejuvenation in the investment world has been witnessed in many markets, today's young generation thanks to technology should have access to investment earlier, as well as there have innovative and modern changes in investment thinking. Securities is one of the emerging investment fields and attracts the attention of many investors because of its huge profit potential. However, this field also requires investors to have certain knowledge and understanding, as well as implicit many risks. ")
+        st.write("Therefore, stock market prediction can be of great help to investors in limiting risks, as well as helping them make the best investment decisions. Forecasting the stock market is particularly difficult by reason of the nonlinear, volatile, and complex nature of the market. Currently, stock forecasting models often fall into traditional linear models and models represented by Deep Learning. However, because data from the stock market is a time-series data with both linear and nonlinear parts, the single forecast results through forecasting models are often not so reliable.")
+        st.write("Time-Series Forecasting is an important area of ​​Machine Learning because there are many prediction problems involving components of time. However, Time-Series Forecasting is often overlooked because it is the components of time that make time series problems more difficult to deal with.")
         st.write("##")
         # st.write("Will be add soon"
         # )
         st.write("[See our report >](https://drive.google.com/file/d/16_IbuXiqWthJYM--fNYwMRiOlqi7aI9m/view?usp=sharing)")
         st.write("[See our slide >](https://drive.google.com/file/d/1Fr4hF8aIY1f9V0pbFHw1MD2Ahw-Jt95R/view?usp=sharing)")
-    # with right_column:
-    #     st_lottie(example, height=300, key="example")
+    with right_column:
+        st.image('image/3.jpg')
 
 # ---- IMPORT DATA ----
 flag = False
@@ -110,8 +113,8 @@ with st.container():
             x_train = []
             y_train = []
 
-            for i in range(30, len(train_data)):
-                x_train.append(train_data[i-30:i, 0])
+            for i in range(5, len(train_data)):
+                x_train.append(train_data[i-5:i, 0])
                 y_train.append(train_data[i, 0])
 
             x_train, y_train = np.array(x_train), np.array(y_train)
@@ -122,24 +125,24 @@ with st.container():
             model = Sequential()
             model.add(LSTM(256, return_sequences=True, input_shape= (x_train.shape[1], 1)))
             model.add(LSTM(128, input_shape= (x_train.shape[1], 1)))
-            model.add(Dense(16))
+            model.add(Dense(8))
             model.add(Dense(1))
             model.compile(optimizer=Adam(learning_rate=0.0001), loss='mean_squared_error')
 
             # ---- TRAIN MODEL ---- 
-            model.fit(x_train, y_train, batch_size=1, epochs=1, shuffle=False)
-            test_data = scaled_data[training_data_len - 30: , :]
+            model.fit(x_train, y_train, batch_size=2, epochs=2, shuffle=False)
+            test_data = scaled_data[training_data_len - 5: , :]
             
             # ---- EVALUATE ---- 
             # ---- LSTM Model
             st.write("---")
             st.subheader("Prediction by LSTM Model:")
-            test_data = scaled_data[training_data_len - 30: , :]
+            test_data = scaled_data[training_data_len - 5: , :]
 
             x_test = []
             y_test = dataset[training_data_len:, :]
-            for i in range(30, len(test_data)):
-                x_test.append(test_data[i-30:i, 0])
+            for i in range(5, len(test_data)):
+                x_test.append(test_data[i-5:i, 0])
                 
             x_test = np.array(x_test)
 
